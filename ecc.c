@@ -855,6 +855,7 @@ static void vli_modInv(uint8_t *p_result, uint8_t *p_input, uint8_t *p_mod)
 {
     uint8_t a[NUM_ECC_DIGITS], b[NUM_ECC_DIGITS], u[NUM_ECC_DIGITS], v[NUM_ECC_DIGITS];
     uint8_t l_carry;
+    int l_cmpResult;
 
     vli_set(a, p_input);
     vli_set(b, p_mod);
@@ -862,7 +863,6 @@ static void vli_modInv(uint8_t *p_result, uint8_t *p_input, uint8_t *p_mod)
     u[0] = 1;
     vli_clear(v);
 
-    int l_cmpResult;
     while((l_cmpResult = vli_cmp(a, b)) != 0)
     {
         l_carry = 0;
@@ -1211,7 +1211,8 @@ static void vli_modMult(uint8_t *p_result, uint8_t *p_left, uint8_t *p_right, ui
     uint l_digitShift, l_bitShift;
     uint l_productBits;
     uint l_modBits = vli_numBits(p_mod);
-    
+    uint8_t l_carry;
+
     vli_mult(l_product, p_left, p_right);
     l_productBits = vli_numBits(l_product + NUM_ECC_DIGITS);
     if(l_productBits)
@@ -1258,7 +1259,8 @@ static void vli_modMult(uint8_t *p_result, uint8_t *p_left, uint8_t *p_right, ui
             }
             vli_sub(l_product + NUM_ECC_DIGITS, l_product + NUM_ECC_DIGITS, l_modMultiple + NUM_ECC_DIGITS);
         }
-        uint8_t l_carry = (l_modMultiple[NUM_ECC_DIGITS] & 0x01) << 7;
+        // uint8_t l_carry = (l_modMultiple[NUM_ECC_DIGITS] & 0x01) << 7;
+        l_carry = (l_modMultiple[NUM_ECC_DIGITS] & 0x01) << 7;
         vli_rshift1(l_modMultiple + NUM_ECC_DIGITS);
         vli_rshift1(l_modMultiple);
         l_modMultiple[NUM_ECC_DIGITS-1] |= l_carry;
@@ -1322,6 +1324,11 @@ int ecdsa_verify(EccPoint *p_publicKey, uint8_t p_hash[NUM_ECC_DIGITS], uint8_t 
     uint8_t tx[NUM_ECC_DIGITS];
     uint8_t ty[NUM_ECC_DIGITS];
     uint8_t tz[NUM_ECC_DIGITS];
+    EccPoint *l_points[4];
+    uint l_numBits;
+    EccPoint *l_point;
+    int i;
+    int l_index;
     
     if(vli_isZero(r) || vli_isZero(s))
     { /* r, s must not be 0. */
@@ -1349,22 +1356,30 @@ int ecdsa_verify(EccPoint *p_publicKey, uint8_t p_hash[NUM_ECC_DIGITS], uint8_t 
     apply_z(l_sum.x, l_sum.y, z);
     
     /* Use Shamir's trick to calculate u1*G + u2*Q */
-    EccPoint *l_points[4] = {NULL, &curve_G, p_publicKey, &l_sum};
-    uint l_numBits = max(vli_numBits(u1), vli_numBits(u2));
+    // EccPoint *l_points[4] = {NULL, &curve_G, p_publicKey, &l_sum};
+    l_points[0] = NULL;
+    l_points[1] = &curve_G;
+    l_points[2] = p_publicKey;
+    l_points[3] = &l_sum;
+
+    // uint l_numBits = max(vli_numBits(u1), vli_numBits(u2));
+    l_numBits = max(vli_numBits(u1), vli_numBits(u2));
     
-    EccPoint *l_point = l_points[(!!vli_testBit(u1, l_numBits-1)) | ((!!vli_testBit(u2, l_numBits-1)) << 1)];
+    // EccPoint *l_point = l_points[(!!vli_testBit(u1, l_numBits-1)) | ((!!vli_testBit(u2, l_numBits-1)) << 1)];
+    l_point = l_points[(!!vli_testBit(u1, l_numBits-1)) | ((!!vli_testBit(u2, l_numBits-1)) << 1)];
     vli_set(rx, l_point->x);
     vli_set(ry, l_point->y);
     vli_clear(z);
     z[0] = 1;
 
-    int i;
     for(i = l_numBits - 2; i >= 0; --i)
     {
         EccPoint_double_jacobian(rx, ry, z);
         
-        int l_index = (!!vli_testBit(u1, i)) | ((!!vli_testBit(u2, i)) << 1);
-        EccPoint *l_point = l_points[l_index];
+        // int l_index = (!!vli_testBit(u1, i)) | ((!!vli_testBit(u2, i)) << 1);
+        l_index = (!!vli_testBit(u1, i)) | ((!!vli_testBit(u2, i)) << 1);
+        // EccPoint *l_point = l_points[l_index];
+        l_point = l_points[l_index];
         if(l_point)
         {
             vli_set(tx, l_point->x);
