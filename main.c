@@ -17,14 +17,6 @@ void UART_Init()
     ES = 0;
 }
 
-void UART_Send_Data(unsigned char byte)
-{
-    SBUF = byte;
-    while (!TI)
-        ;
-    TI = 0;
-}
-
 int ecsda_test(void)
 {
     int ret = 0;
@@ -32,7 +24,6 @@ int ecsda_test(void)
     uint8_t signatureS[NUM_ECC_DIGITS];
     uint8_t publicX[NUM_ECC_DIGITS];
     uint8_t publicY[NUM_ECC_DIGITS];
-
 
     EccPoint l_public;
     uint8_t l_private[NUM_ECC_DIGITS];
@@ -67,16 +58,6 @@ int ecsda_test(void)
     return 1;
 }
 
-void show(char *str, int str_len)
-{
-    int index = 0;
-    UART_Send_Data('-');
-
-    for (; index < str_len; index++)
-        UART_Send_Data(str[index]);
-    UART_Send_Data('+');
-}
-
 void printHex(unsigned char *hex, int hex_len)
 {
     int i = 0;
@@ -87,9 +68,19 @@ void printHex(unsigned char *hex, int hex_len)
     printf("\n");
 }
 
+char putchar (char ch)
+{
+    SBUF = ch;
+    while (!TI);
+    TI = 0;
+    return ch;
+}
+
 void main()
 {
     int i = 0;
+    UART_Init();
+    printf("wanglaio\n");
     ecsda_test();
     i++;
 }
