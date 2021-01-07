@@ -17,6 +17,17 @@ void UART_Init()
     ES = 0;
 }
 
+void printHex(char *tips, unsigned char *hex, int hex_len)
+{
+    int i = 0;
+    printf("%s: ", tips);
+    for (; i < hex_len; i++)
+    {
+        printf("%.2x", hex[i]);
+    }
+    printf("\n");
+}
+
 int ecsda_test(void)
 {
     int ret = 0;
@@ -38,49 +49,26 @@ int ecsda_test(void)
     ecc_bytes2native(l_hash, tmp_hash);
 
     ecc_make_key(&l_public, l_private, l_random);
-
+    // printHex("l_private", l_private, NUM_ECC_DIGITS);
     ret = ecdsa_sign(r, s, l_private, l_random, l_hash);
     ecc_bytes2native(signatureR, r);
     ecc_bytes2native(signatureS, s);
     ecc_bytes2native(publicX, l_public.x);
     ecc_bytes2native(publicY, l_public.y);
-    // if (!ecc_valid_public_key(&l_public))
-    // {
-    //     UART_Send_Data('x');
-    //     UART_Send_Data('2');
-    // }
-
-    // if (!ecdsa_verify(&l_public, l_hash, r, s))
-    // {
-    //     UART_Send_Data('x');
-    //     UART_Send_Data('3');
-    // }
     return 1;
 }
 
-void printHex(unsigned char *hex, int hex_len)
-{
-    int i = 0;
-    for (; i < hex_len; i++)
-    {
-        printf("%.2x", hex[i]);
-    }
-    printf("\n");
-}
-
-char putchar (char ch)
+char putchar(char ch)
 {
     SBUF = ch;
-    while (!TI);
+    while (!TI)
+        ;
     TI = 0;
     return ch;
 }
 
 void main()
 {
-    int i = 0;
     UART_Init();
-    printf("wanglaio\n");
     ecsda_test();
-    i++;
 }
