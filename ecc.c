@@ -1,7 +1,5 @@
 #include "ecc.h"
-
-#include <string.h>
-#include <stdlib.h>
+#include "common.h"
 
 typedef unsigned int uint;
 

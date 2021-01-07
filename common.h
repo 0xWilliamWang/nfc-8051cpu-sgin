@@ -1,5 +1,10 @@
-#ifndef __STDINT_H_
-#define __STDINT_H_
+#ifndef __COMMON_H_
+#define __COMMON_H_
+
+#include <reg51.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef signed char int8_t;
 typedef short int16_t;
@@ -104,5 +109,9 @@ typedef unsigned int uint_fast32_t;
 
 #define INTMAX_C(x) INT64_C(x)
 #define UINTMAX_C(x) UINT64_C(x)
+
+
+void UART_Init();
+void printHex(char *tips, unsigned char *hex, int hex_len);
 
 #endif

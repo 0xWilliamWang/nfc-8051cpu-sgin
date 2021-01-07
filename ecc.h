@@ -1,7 +1,7 @@
 #ifndef _MICRO_ECC_H_
 #define _MICRO_ECC_H_
 
-#include "stdint.h"
+#include "common.h"
 
 /* Define as 1 to enable ECDSA functions, 0 to disable.
  */
