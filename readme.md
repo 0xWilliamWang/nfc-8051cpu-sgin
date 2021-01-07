@@ -10,6 +10,23 @@
 3. save publicX.txt X:0x000044,X:0x000063
 4. save publicY.txt X:0x000064,X:0x000083
 
+# nfc-8051cpu-sgin
+1. 现象：keil c51 compiler：
+   1. 不支持long数据类型
+   2. 变量声明必须在函数块头部
+   3. ...
+2. 原因：编译器是c89`C51 COMPILER V9.60.0.0 - SN: Eval Version`，不支持一些现代C语言的一些特性
+3. 参考：[c51](https://www.keil.com/c51/cx51.asp)
+4. 解决办法：换一个更现代的编译器，eg：sdcc
+
+# 使用sdcc
+1. [8051-Programming-Using-Small-Device-C-Compiler-SDC](https://www.instructables.com/8051-Programming-Using-Small-Device-C-Compiler-SDC/)
+2. [sdcc](http://sdcc.sourceforge.net/)
+3. 使用方法：
+   1. vscode编辑代码
+   2. 添加代码到proteus中
+   3. 在proteus中编译和执行![](img/img1.png)
+
 # 参考
 1. 移植的原库[nano-ecc](https://github.com/iSECPartners/nano-ecc)
 2. JavaScript`secp256r1`签名库[ecdsa-secp256r1](https://github.com/forevertz/ecdsa-secp256r1)
