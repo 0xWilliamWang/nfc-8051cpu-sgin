@@ -1,5 +1,17 @@
 #include "common.h"
 #include "ecc.h"
+#include "sha256.h"
+
+void test_sha256(void)
+{
+    SHA256_CTX ctx;
+    char *msg = "abc";
+    unsigned char result[32]={0};
+    sha256_init(&ctx);
+    sha256_update(&ctx, msg, strlen(msg));
+    sha256_final(&ctx, result);
+    printHex(msg, result, 32);
+}
 
 int ecsda_test(void)
 {
@@ -31,9 +43,11 @@ int ecsda_test(void)
     return 1;
 }
 
-
 void main()
 {
+    int intlen = sizeof(int);
+    int uint32len = sizeof(uint32_t);
     UART_Init();
-    ecsda_test();
+    // ecsda_test();
+    test_sha256();
 }
